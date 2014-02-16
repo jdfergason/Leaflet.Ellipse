@@ -7,6 +7,10 @@ semi-minor axis as well as a tilt degrees from west.
 
 *Requires Leaflet 0.6.0 or newer.*
 
+## Demo
+
+A demo is available on the Github Pages webpage for Leaflet.ellipse [here](http://jdfergason.github.io/leaflet.ellipse).
+
 ## Usage
 
 Include the ellipse javasript file:
