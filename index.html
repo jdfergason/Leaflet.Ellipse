@@ -8,18 +8,20 @@
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     
-     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
-     <script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
-    
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+    <script src="javascripts/l.ellipse.min.js"></script>
+
     <title>Leaflet.ellipse by jdfergason</title>
 
     <style>
       #map {
-        height: 180px;
+        height: 300px;
       }
     </style>
   </head>
@@ -41,12 +43,6 @@
 
         <hr>
 
-        <section id="demo">
-           <div id="map"></div>
-        </section>
-
-        <hr>
-
         <section id="main_content">
           <h1>
 <a name="leafletellipse" class="anchor" href="#leafletellipse"><span class="octicon octicon-link"></span></a>Leaflet.ellipse</h1>
@@ -57,6 +53,11 @@ semi-minor axis as well as a tilt degrees from west.</p>
 
 <p><em>Requires Leaflet 0.6.0 or newer.</em></p>
 
+<h2>
+<a name="demo" class="anchor" href="#demo"><span class="octicon octicon-link"></span></a>Demo</h2>
+
+<div id="map"></div>
+<hr>
 <h2>
 <a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
 
@@ -109,7 +110,29 @@ semi-minor axis as well as a tilt degrees from west.</p>
 	
       map.addLayer(mapquest);
 
-      //var ellipse = L.ellipse([51.505, -0.09], [500, 100], 45).addTo(map);
+      var ellipse1 = L.ellipse([51.505, -0.05], [500, 200], 0, {
+        color: 'green', 
+        fillColor: 'green',
+        fillOpacity: 0.5
+      }).addTo(map);
+
+      var ellipse1 = L.ellipse([51.508, -0.07], [250, 300], 45, {
+        color: 'blue', 
+        fillColor: 'blue',
+        fillOpacity: 0.5
+      }).addTo(map);
+
+      var ellipse1 = L.ellipse([51.505, -0.09], [900, 150], 90, {
+        color: 'yellow', 
+        fillColor: 'yellow',
+        fillOpacity: 0.5
+      }).addTo(map);
+
+      var ellipse1 = L.ellipse([51.508, -0.12], [750, 400], 135, {
+        color: 'red', 
+        fillColor: 'red',
+        fillOpacity: 0.5
+      }).addTo(map);
     </script>
     
   </body>
