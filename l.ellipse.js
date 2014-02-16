@@ -27,8 +27,8 @@ L.Ellipse = L.Path.extend({
         }
 
         if (radii) {
-            this._mRadiusX = radii.x;
-            this._mRadiusY = radii.y;
+            this._mRadiusX = radii[0];
+            this._mRadiusY = radii[1];
         }
     },
 
@@ -44,8 +44,8 @@ L.Ellipse = L.Path.extend({
     },
 
     setRadius: function (radii) {
-        this._mRadiusX = radii.x;
-        this._mRadiusY = radii.y;
+        this._mRadiusX = radii[0];
+        this._mRadiusY = radii[1];
         return this.redraw();
     },
 
