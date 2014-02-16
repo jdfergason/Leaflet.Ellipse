@@ -9,7 +9,7 @@ semi-minor axis as well as a tilt degrees from west.
 
 ## Demo
 
-A demo is available on the Github Pages webpage for Leaflet.ellipse [here](http://jdfergason.github.io/leaflet.ellipse).
+A demo is available on the Github Pages webpage for Leaflet.ellipse [here](http://jdfergason.github.io/Leaflet.Ellipse/).
 
 ## Usage
 
