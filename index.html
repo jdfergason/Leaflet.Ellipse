@@ -3,6 +3,7 @@
   <head>
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
     <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
@@ -10,7 +11,17 @@
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+    
+     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+     <script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+    
     <title>Leaflet.ellipse by jdfergason</title>
+
+    <style>
+      #map {
+        height: 180px;
+      }
+    </style>
   </head>
 
   <body>
@@ -26,6 +37,12 @@
           <a href="https://github.com/jdfergason/Leaflet.Ellipse/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
           <a href="https://github.com/jdfergason/Leaflet.Ellipse/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
           <a href="https://github.com/jdfergason/Leaflet.Ellipse" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <hr>
+
+        <section id="demo">
+           <div id="map"></div>
         </section>
 
         <hr>
@@ -81,5 +98,20 @@ semi-minor axis as well as a tilt degrees from west.</p>
         
       </div>
     </div>
+    
+    <script>
+      var map = L.map('map').setView([51.505, -0.09], 13);
+      var mapquestOsm = L.tileLayer({
+          url: 'http://otile{s}.mqcdn.com/tiles/1.0.0/{type}/{z}/{x}/{y}.png',
+          options: {
+			        subdomains: '1234',
+			        type: 'osm',
+			        attribution: 'Tiles &copy; <a href="http://www.mapquest.com/" target="_blank">MapQuest</a> <img src="http://developer.mapquest.com/content/osm/mq_logo.png" />'
+		      }
+      }).addTo(map);
+
+      //var ellipse = L.ellipse([51.505, -0.09], [500, 100], 45).addTo(map);
+    </script>
+    
   </body>
 </html>
