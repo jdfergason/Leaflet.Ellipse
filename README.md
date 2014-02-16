@@ -1,7 +1,7 @@
 Leaflet.ellipse
 ===============
 
-A basic ellipse type for Leaflet [Leaflet](http://leafletjs.com), a JS 
+A basic ellipse type for [Leaflet](http://leafletjs.com), a JS 
 library for interactive maps.  Allows specification of semi-major and
 semi-minor axis as well as a tilt degrees from west.
 
