@@ -11,7 +11,7 @@ L.SVG.include ({
             endPoint.largeArc + ',' + endPoint.sweep + ',' +
             endPoint.x1 + ',' + endPoint.y1 + ' z';
         this._setPath(layer, d);
-    },
+    }
 });
 
 L.Canvas.include ({
@@ -25,17 +25,19 @@ L.Canvas.include ({
 
         this._drawnLayers[layer._leaflet_id] = layer;
 
+        ctx.save();
+
+        ctx.translate(p.x, p.y);
+        if (layer._tilt !== 0) {
+            ctx.rotate( layer._tilt );
+        }
         if (s !== 1) {
-            ctx.save();
             ctx.scale(1, s);
         }
 
         ctx.beginPath();
-        ctx.arc(p.x, p.y / s, r, 0, Math.PI * 2, false);
-
-        if (s !== 1) {
-            ctx.restore();
-        }
+        ctx.arc(0, 0, r, 0, Math.PI * 2);
+        ctx.restore();
 
         this._fillStroke(ctx, layer);
     },
@@ -63,7 +65,6 @@ L.Ellipse = L.Path.extend({
         if (radii) {
             this._mRadiusX = radii[0];
             this._mRadiusY = radii[1];
-            this._mRadius = this._mRadiusX;
         }
     },
 
@@ -83,6 +84,7 @@ L.Ellipse = L.Path.extend({
     },
 
     getBounds: function () {
+        // TODO respect tilt (bounds are too big)
         var lngRadius = this._getLngRadius(),
             latRadius = this._getLatRadius(),
             latlng = this._latlng;
@@ -118,13 +120,16 @@ L.Ellipse = L.Path.extend({
         this._point = this._map.latLngToLayerPoint(latlng);
         this._radiusX = Math.max(this._point.x - pointLeft.x, 1);
         this._radiusY = Math.max(pointBelow.y - this._point.y, 1);
+        this._radius = Math.max(this._radiusX, this._radiusY);
+        this._tilt = Math.PI * this._tiltDeg / 180;
         this._endPointParams = this._centerPointToEndPoint();
         this._updateBounds();
     },
 
 	_updateBounds: function () {
-		var rx = this._radiusX,
-		    ry = this._radiusY,
+        // TODO respect tilt (bounds are too big)
+		var rx = this._radius,
+		    ry = this._radius,
 		    w = this._clickTolerance(),
 		    p = [rx + w, ry + w];
 		this._pxBounds = new L.Bounds(this._point.subtract(p), this._point.add(p));
@@ -180,13 +185,18 @@ L.Ellipse = L.Path.extend({
     },
 
 	_empty: function () {
-		return this._radius && !this._renderer._bounds.intersects(this._pxBounds);
+		return this._radiusX && this._radiusY && !this._renderer._bounds.intersects(this._pxBounds);
 	},
 
     _containsPoint : function (p) {
-        // TODO
-
-        return p.distanceTo(this._point) <= this._radius + this._clickTolerance();
+        // http://stackoverflow.com/questions/7946187/point-and-ellipse-rotated-position-test-algorithm
+        var sin = Math.sin(this._tilt);
+        var cos = Math.cos(this._tilt);
+        var dx = p.x - this._point.x;
+        var dy = p.y - this._point.y;
+        var sumA = cos * dx + sin * dy;
+        var sumB = sin * dx - cos * dy;
+        return sumA * sumA / (this._radiusX * this._radiusX)  + sumB * sumB / (this._radiusY * this._radiusY) <= 1;
     }
 });
 
