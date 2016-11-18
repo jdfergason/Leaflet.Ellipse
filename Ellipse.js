@@ -120,20 +120,25 @@ L.Ellipse = L.Path.extend({
         this._point = this._map.latLngToLayerPoint(latlng);
         this._radiusX = Math.max(this._point.x - pointLeft.x, 1);
         this._radiusY = Math.max(pointBelow.y - this._point.y, 1);
-        this._radius = Math.max(this._radiusX, this._radiusY);
         this._tilt = Math.PI * this._tiltDeg / 180;
         this._endPointParams = this._centerPointToEndPoint();
         this._updateBounds();
     },
 
-	_updateBounds: function () {
-        // TODO respect tilt (bounds are too big)
-		var rx = this._radius,
-		    ry = this._radius,
-		    w = this._clickTolerance(),
-		    p = [rx + w, ry + w];
-		this._pxBounds = new L.Bounds(this._point.subtract(p), this._point.add(p));
-	},
+    _updateBounds: function () {
+        // http://math.stackexchange.com/questions/91132/how-to-get-the-limits-of-rotated-ellipse
+        var sin = Math.sin(this._tilt);
+        var cos = Math.cos(this._tilt);
+        var sinSquare = sin * sin;
+        var cosSquare = cos * cos;
+        var aSquare = this._radiusX * this._radiusX;
+        var bSquare = this._radiusY * this._radiusY;
+        var halfWidth = Math.sqrt(aSquare*cosSquare+bSquare*sinSquare);
+        var halfHeight = Math.sqrt(aSquare*sinSquare+bSquare*cosSquare);
+        var w = this._clickTolerance();
+        var p = [halfWidth + w, halfHeight + w];
+        this._pxBounds = new L.Bounds(this._point.subtract(p), this._point.add(p));
+    },
 
 	_update: function () {
 		if (this._map) {
