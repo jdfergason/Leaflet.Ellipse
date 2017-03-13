@@ -1,0 +1,213 @@
+L.Ellipse = L.Path.extend({
+
+	options: {
+        fill: true,
+        startAngle: 0,
+        endAngle: 359.9
+    },
+	
+    initialize: function (latlng, radii, tilt, options) {
+		L.setOptions(this, options);
+       this._latlng = L.latLng(latlng);
+
+        if (tilt) {
+            this._tiltDeg = tilt;
+        } else {
+            this._tiltDeg = 0;
+        }
+
+        if (radii) {
+            this._mRadiusX = radii[0];
+            this._mRadiusY = radii[1];
+        }
+    },
+	
+		// @method setLatLng(latLng: LatLng): this
+	// Sets the position of a circle marker to a new location.
+	setLatLng: function (latlng) {
+		this._latlng = L.latLng(latlng);
+		this.redraw();
+		return this.fire('move', {latlng: this._latlng});
+	},
+
+	// @method getLatLng(): LatLng
+	// Returns the current geographical position of the circle marker
+	getLatLng: function () {
+		return this._latlng;
+	},
+		
+    setRadius: function (radii) {
+        this._mRadiusX = radii[0];
+        this._mRadiusY = radii[1];
+        return this.redraw();
+    },
+	
+	getRadius: function () {
+        return new L.point(this._mRadiusX, this._mRadiusY);
+    },
+	
+    setTilt: function (tilt) {
+        this._tiltDeg = tilt;
+        return this.redraw();
+    },
+		_setPath: function (layer, path) {
+		layer._path.setAttribute('d', path);
+	},
+	
+	setStyle : function (options) {
+		L.Path.prototype.setStyle.call(this, options);
+		return this;
+	},
+	
+    projectLatlngs: function () {
+        var lngRadius = this._getLngRadius(),
+            latRadius = this._getLatRadius(),
+            latlng = this._latlng,
+            pointLeft = this._map.latLngToLayerPoint([latlng.lat, latlng.lng - lngRadius]),
+            pointBelow = this._map.latLngToLayerPoint([latlng.lat - latRadius, latlng.lng]);
+
+        this._point = this._map.latLngToLayerPoint(latlng);
+        this._radiusX = Math.max(this._point.x - pointLeft.x, 1);
+        this._radiusY = Math.max(pointBelow.y - this._point.y, 1);
+        this._endPointParams = this._centerPointToEndPoint();
+    },
+
+    getBounds: function () {
+        var lngRadius = this._getLngRadius(),
+            latRadius = this._getLatRadius(),
+            latlng = this._latlng;
+
+        return new L.LatLngBounds(
+                [latlng.lat - latRadius, latlng.lng - lngRadius],
+                [latlng.lat + latRadius, latlng.lng + lngRadius]);
+    },
+
+    _updateEllipse: function (layer) {
+        var c = this._point,
+            rx = this._radiusX,
+            ry = this._radiusY,
+            phi = this._tiltDeg,
+            endPoint = this._endPointParams;
+    
+       
+
+		
+		var d;
+        if (L.Browser.svg) {
+            d = 'M' + endPoint.x0 + ',' + endPoint.y0 +
+                   'A' + rx + ',' + ry + ',' + phi + ',' +
+                   endPoint.largeArc + ',' + endPoint.sweep + ',' +
+                   endPoint.x1 + ',' + endPoint.y1 + ' z';
+        } else {
+            c._round();
+            rx = Math.round(rx);
+            ry = Math.round(ry);
+            d =  'AL ' + c.x + ',' + c.y + ' ' + rx + ',' + ry +
+                   ' ' + phi + ',' + (65535 * 360);
+        }
+		
+	
+
+		this._setPath(layer, d);
+    },
+
+
+
+    // TODO Earth hardcoded, move into projection code!
+
+    _centerPointToEndPoint: function () {
+        // Convert between center point parameterization of an ellipse
+        // too SVG's end-point and sweep parameters.  This is an
+        // adaptation of the perl code found here:
+        // http://commons.oreilly.com/wiki/index.php/SVG_Essentials/Paths
+		
+		var DEG_TO_RAD = Math.PI / 180;
+		
+        var c = this._point,
+            rx = this._radiusX,
+            ry = this._radiusY,
+            theta2 = (this.options.startAngle + this.options.endAngle) *
+                     DEG_TO_RAD,
+            theta1 = this.options.startAngle * DEG_TO_RAD,
+            delta = this.options.endAngle,
+            phi = this._tiltDeg * DEG_TO_RAD;
+
+        // Determine start and end-point coordinates
+        var x0 = c.x + Math.cos(phi) * rx * Math.cos(theta1) +
+            Math.sin(-phi) * ry * Math.sin(theta1);
+        var y0 = c.y + Math.sin(phi) * rx * Math.cos(theta1) +
+            Math.cos(phi) * ry * Math.sin(theta1);
+
+        var x1 = c.x + Math.cos(phi) * rx * Math.cos(theta2) +
+            Math.sin(-phi) * ry * Math.sin(theta2);
+        var y1 = c.y + Math.sin(phi) * rx * Math.cos(theta2) +
+            Math.cos(phi) * ry * Math.sin(theta2);
+
+        var largeArc = (delta > 180) ? 1 : 0;
+        var sweep = (delta > 0) ? 1 : 0;
+    
+        return {'x0': x0, 'y0': y0, 'tilt': phi, 'largeArc': largeArc,
+                'sweep': sweep, 'x1': x1, 'y1': y1};
+    },
+
+    _getLatRadius: function () {
+        return (this._mRadiusY / 40075017) * 360;
+    },
+
+    _getLngRadius: function () {
+		var DEG_TO_RAD = Math.PI / 180;
+        return ((this._mRadiusX / 40075017) * 360) / Math.cos(DEG_TO_RAD * this._latlng.lat);
+    },
+
+    _checkIfEmpty: function () {
+        if (!this._map) {
+            return false;
+        }
+        var vp = this._map._pathViewport,
+            r = this._radiusX,
+            p = this._point;
+
+        return p.x - r > vp.max.x || p.y - r > vp.max.y ||
+               p.x + r < vp.min.x || p.y + r < vp.min.y;
+    },
+
+	_project: function () {
+		
+		var lngRadius = this._getLngRadius();
+        var latRadius = this._getLatRadius();
+        var latlng = this._latlng;
+        var pointLeft = this._map.latLngToLayerPoint([latlng.lat, latlng.lng - lngRadius]);
+        var pointBelow = this._map.latLngToLayerPoint([latlng.lat - latRadius, latlng.lng]);
+		
+        this._point = this._map.latLngToLayerPoint(latlng);
+        this._radiusX = Math.max(this._point.x - pointLeft.x, 1);
+        this._radiusY = Math.max(pointBelow.y - this._point.y, 1);
+        this._endPointParams = this._centerPointToEndPoint();
+
+		this._updateBounds();
+	},
+
+	_updateBounds: function () {
+		 var lngRadius = this._getLngRadius(),
+            latRadius = this._getLatRadius(),
+            latlng = this._latlng;
+
+			this._pxBounds = new L.Bounds(
+                [latlng.lat - latRadius, latlng.lng - lngRadius],
+                [latlng.lat + latRadius, latlng.lng + lngRadius]);		
+	},
+
+	_update: function () {
+		if (this._map) {
+			this._updatePath();
+		}
+	},
+
+	_updatePath: function () {
+		this._updateEllipse(this);
+	},
+});
+
+L.ellipse = function(latlng, radii, tilt, options) {
+	return new L.Ellipse(latlng, radii, tilt, options);
+}
