@@ -2,7 +2,7 @@
   "name": "leaflet-ellipse",
   "version": "0.9.1",
   "description": "A basic ellipse type for Leaflet, a JS library for interactive maps.",
-  "main": "Ellipse.js",
+  "main": "l.ellipse.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/jdfergason/Leaflet.Ellipse"
