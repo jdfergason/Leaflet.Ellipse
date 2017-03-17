@@ -5,7 +5,7 @@ A basic ellipse type for [Leaflet](http://leafletjs.com), a JS
 library for interactive maps.  Allows specification of semi-major and
 semi-minor axis as well as a tilt degrees from west.
 
-*Requires Leaflet 0.6.0 or newer.*
+*Supports Leaflet 1.0.0 or newer.*
 
 ## Supported browsers
 
