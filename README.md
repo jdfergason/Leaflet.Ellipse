@@ -28,6 +28,11 @@ After instantiating the map create a new ellipse.
 
     var ellipse = L.ellipse([51.5, -0.09], [500, 100], 90).addTo(map);
 
+Access the typed data via
+
+    import 'leaflet-ellipse/l.ellipse';
+
+
 ## API
 
 *Factory method*
