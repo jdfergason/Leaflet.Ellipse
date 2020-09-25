@@ -168,10 +168,18 @@ L.Ellipse = L.Path.extend({
     },
 
     _getLatRadius: function () {
+      var simpleCrs = !!this._map.options.crs.infinite;
+      if(simpleCrs)
+        return this._mRadiusY;
+      else
         return (this._mRadiusY / 40075017) * 360;
     },
 
     _getLngRadius: function () {
+      var simpleCrs = !!this._map.options.crs.infinite;
+      if(simpleCrs)
+        return this._mRadiusX;
+      else
         return ((this._mRadiusX / 40075017) * 360) / Math.cos((Math.PI / 180) * this._latlng.lat);
     },
 
