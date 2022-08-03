@@ -40,7 +40,14 @@ L.Canvas.include ({
             r = layer._radiusX,
             s = (layer._radiusY || r) / r;
 
-        this._drawnLayers[layer._leaflet_id] = layer;
+        if (this.hasOwnProperty('_drawnLayers')) {
+            this._drawnlayers[layer._leaflet_id] = layer;
+        } else if (this.hasOwnProperty('_layers')) {
+            this._layers[layer._leaflet_id] = layer;
+        } else {
+            throw new Error("Cannot find property _drawnLayers or _layers");
+        }
+
 
         ctx.save();
 
